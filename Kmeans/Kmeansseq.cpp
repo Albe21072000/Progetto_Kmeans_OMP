@@ -1,4 +1,4 @@
-#include "cluster.h"
+#include "Kmeans.h"
 
 struct points{
     vector<double>  x;
@@ -50,7 +50,6 @@ int main() {
     }
     punti.cluster=*new vector<int>(n);
     std::fill_n(punti.cluster.begin(),n,-1);
-    printf("ciao");
     auto cambi=-1;
     double sse=0.0;
     double distanza;
