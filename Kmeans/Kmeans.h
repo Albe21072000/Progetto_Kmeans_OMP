@@ -10,10 +10,21 @@
 #include <fstream>   // Per poter scrivere i risultati
 #endif
 #ifndef test
-#define NUM_PUNTI 1000000
-#define NUM_CENTROIDI 40
+#define NUM_PUNTI 100000
+#define NUM_CENTROIDI 30
 #endif
 using namespace std;
+struct points{       //structure of array per contenere le coordinate dei punti, il cluster di appartenenza e la distanza dal centroide di tale gruppo
+    vector<double>  x;
+    vector<double> y;
+    vector<int> cluster;
+    vector<double> distcluster;
+};
+struct centroids{ //structure of array per contenere coordinate dei centroidi ed i lock per sovrascriverli
+    vector<double> x;
+    vector<double> y;
+    vector<int> numpunti;
+};
 double inline distance(double d,double x1, double y1, double x2, double y2) { //calcolo la distanza di Minkowski di grado d
     double xdist= abs(x1-x2);
     double ydist= abs(y1-y2);
@@ -23,3 +34,4 @@ double inline distance(double d,double x1, double y1, double x2, double y2) { //
 double randgen(){ //funzione che restituisce un numero casuale nell'intervallo da me desiderato
     return(((double) rand() / RAND_MAX) * MAX_VAL);
 }
+

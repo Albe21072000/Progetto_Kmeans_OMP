@@ -1,24 +1,10 @@
 #include "Kmeans.h"
 
-struct points{
-    vector<double>  x;
-    vector<double> y;
-    vector<int> cluster;
-    vector<double> distcluster;
-};
-
-struct centroids{ //structure of array per contenere coordinate dei centroidi ed i lock per sovrascriverli
-    vector<double> x;
-    vector<double> y;
-    vector<int> numpunti;
-};
-
 int main() {
-    //srand(time(0));
+    //srand(time(NULL));
     centroids centroidi{};
     points punti{};
 #ifdef test
-    printf("ciao\n");
    punti.x={3,4,5,6,7,6,7,8,3,2,3,2};
    punti.y={7,6,5,4,3,2,2,4,3,6,5,4};
    centroidi.x={4,4};
@@ -38,16 +24,14 @@ int main() {
     generate(centroidi.x.begin(), centroidi.x.end(), randgen);
     generate(centroidi.y.begin(), centroidi.y.end(), randgen);
 #endif
-
-    double start = omp_get_wtime();
     const unsigned long long n=punti.x.size();
     const unsigned long long k=centroidi.x.size();
-    centroidi.numpunti=*new vector<int>(k);
-    punti.distcluster=*new vector<double>(n);
-
     for(int i=0;i<k;i++){
         printf("(%f,%f) %d\n",centroidi.x[i],centroidi.y[i],i);
     }
+    double start = omp_get_wtime();
+    centroidi.numpunti=*new vector<int>(k);
+    punti.distcluster=*new vector<double>(n);
     punti.cluster=*new vector<int>(n);
     std::fill_n(punti.cluster.begin(),n,-1);
     auto cambi=-1;
@@ -89,7 +73,6 @@ int main() {
                     centroidi.y[i] = centroidi.y[i] / centroidi.numpunti[i];
                 } else{
                     unsigned long long j=(rand() / RAND_MAX) * n;
-                    printf("entrato\n");
                     centroidi.x[i]=punti.x[j];
                     centroidi.y[i]=punti.y[j];
                 }
@@ -103,7 +86,6 @@ int main() {
         printf("(%f,%f) %d\n",centroidi.x[i],centroidi.y[i],i);
     }
     //stampa facoltativa per graficare i risultati
-
 #ifdef output
     std::ofstream myfile;
     myfile.open("outputseq.csv");
@@ -117,8 +99,7 @@ int main() {
 
     myfile.close();
 #endif
-
-    cout<<sse<<" "<<cambi<<endl;
+    cout<<sse<<endl;
     std::cout << "Tempo necessario: " << end-start << " secondi "<< std::endl << std::endl;
     return 0;
 }

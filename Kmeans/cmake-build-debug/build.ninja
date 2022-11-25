@@ -49,8 +49,8 @@ cmake_ninja_workdir = C$:/Users/albeb/CLionProjects/Kmeans/cmake-build-debug/
 
 build cmake_object_order_depends_target_Kmeans: phony || CMakeFiles/Kmeans.dir
 
-build CMakeFiles/Kmeans.dir/cluster.cpp.obj: CXX_COMPILER__Kmeans_Debug C$:/Users/albeb/CLionProjects/Kmeans/cluster.cpp || cmake_object_order_depends_target_Kmeans
-  DEP_FILE = CMakeFiles\Kmeans.dir\cluster.cpp.obj.d
+build CMakeFiles/Kmeans.dir/Kmeans.cpp.obj: CXX_COMPILER__Kmeans_Debug C$:/Users/albeb/CLionProjects/Kmeans/Kmeans.cpp || cmake_object_order_depends_target_Kmeans
+  DEP_FILE = CMakeFiles\Kmeans.dir\Kmeans.cpp.obj.d
   FLAGS = -fopenmp  -g -std=gnu++14
   OBJECT_DIR = CMakeFiles\Kmeans.dir
   OBJECT_FILE_DIR = CMakeFiles\Kmeans.dir
@@ -63,7 +63,7 @@ build CMakeFiles/Kmeans.dir/cluster.cpp.obj: CXX_COMPILER__Kmeans_Debug C$:/User
 #############################################
 # Link the executable Kmeans.exe
 
-build Kmeans.exe: CXX_EXECUTABLE_LINKER__Kmeans_Debug CMakeFiles/Kmeans.dir/cluster.cpp.obj
+build Kmeans.exe: CXX_EXECUTABLE_LINKER__Kmeans_Debug CMakeFiles/Kmeans.dir/Kmeans.cpp.obj
   FLAGS = -fopenmp  -g
   LINK_FLAGS = -static
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
