@@ -1,7 +1,7 @@
 #include "Kmeans.h"
 
 int main() {
-    //srand(time(NULL));
+    srand(time(NULL));
     centroids centroidi{};
     points punti{};
 #ifdef test
@@ -12,14 +12,14 @@ int main() {
 #endif
 
 #ifndef test
-    int npunti=NUM_PUNTI;
+    int npunti=NUM_PUNTI;   //assegno il numero di punti da generare casualmente
     punti.x=*new vector<double>(npunti);
     punti.y=*new vector<double>(npunti);
     punti.distcluster=*new vector<double>(npunti);
-    int numcentr=NUM_CENTROIDI;
+    int numcentr=NUM_CENTROIDI; //assegnpo il numero di centroidi da generare casualmente (e quindi i cluster a cui assegnare i miei punti
     centroidi.x=*new vector<double>(numcentr);
     centroidi.y=*new vector<double>(numcentr);
-    generate(punti.x.begin(), punti.x.end(), randgen);
+    generate(punti.x.begin(), punti.x.end(), randgen);   //riempio i miei vettori delle coordinate con valori casuali
     generate(punti.y.begin(), punti.y.end(), randgen);
     generate(centroidi.x.begin(), centroidi.x.end(), randgen);
     generate(centroidi.y.begin(), centroidi.y.end(), randgen);
@@ -29,7 +29,7 @@ int main() {
     for(int i=0;i<k;i++){
         printf("(%f,%f) %d\n",centroidi.x[i],centroidi.y[i],i);
     }
-    double start = omp_get_wtime();
+    double start = omp_get_wtime(); //faccio partire il contatore per il tempo dopo aver generato i miei dati su cui lavorare
     centroidi.numpunti=*new vector<int>(k);
     punti.distcluster=*new vector<double>(n);
     punti.cluster=*new vector<int>(n);
@@ -42,7 +42,6 @@ int main() {
         cambi=0;
         {
             for (int i = 0; i < n; i++) { //calcolo distanza tra un punto ed ogni centroide e scelgo quella minima per ogni punto
-
                 punti.distcluster[i]=MAX_VAL*1.5;
                 for (int j = 0; j < k; j++) {
                     distanza=distance(2, punti.x[i], punti.y[i], centroidi.x[j], centroidi.y[j]);
@@ -56,16 +55,13 @@ int main() {
                 }
                 punti.cluster[i] = indmin;
             }
-
-            for (int i = 0; i < k; i++) { //azzero i centroidi precedenti
-                centroidi.x[i] = 0;
-                centroidi.y[i] = 0;
-                centroidi.numpunti[i] = 0;
-            }
+            std::fill_n(centroidi.x.begin(),k,0);
+            std::fill_n(centroidi.y.begin(),k,0);
+            std::fill_n(centroidi.numpunti.begin(),k,0);
             for (int i = 0; i < n; i++) { //calcolo i nuovi centroidi
                 centroidi.x[punti.cluster[i]] += punti.x[i];
                 centroidi.y[punti.cluster[i]] += punti.y[i];
-                centroidi.numpunti[punti.cluster[i]] = centroidi.numpunti[punti.cluster[i]] + 1;
+                centroidi.numpunti[punti.cluster[i]]++;
             }
             for (int i = 0; i < k; i++) {
                 if(centroidi.numpunti[i]!=0) {
@@ -99,7 +95,7 @@ int main() {
 
     myfile.close();
 #endif
-    cout<<sse<<endl;
+    cout<<"Somma degli errorei al quadrato (SSE): "<<sse<<endl;
     std::cout << "Tempo necessario: " << end-start << " secondi "<< std::endl << std::endl;
     return 0;
 }

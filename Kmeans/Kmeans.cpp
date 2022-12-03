@@ -1,7 +1,7 @@
 #include "Kmeans.h"
 
 int main() {
-    //srand(time(NULL)); //imposto un seed per la generazione dei numeri casuali
+    srand(time(NULL)); //imposto un seed per la generazione dei numeri casuali
     centroids centroidi{};
     points punti{};
 #ifdef test
@@ -53,11 +53,11 @@ int main() {
             }
 #pragma omp for reduction(+:cambi)
             for (int i = 0; i < n; i++) { //calcolo distanza tra un punto e ogni centroide e scelgo quella minima per ogni punto
-                punti.distcluster[i]=MAX_VAL*1.5;      //inserisco la massima distanza possibile tra due punti generati casualmente come valore iniziale
+                punti.distcluster[i]=MAX_VAL*1.5;      //inserisco la massima distanza possibile tra due punti generati casualmente come valore iniziale  (ossia la diagonale del quadrato di lato MAX_VAL)
 #pragma omp simd
                 for (int j = 0; j < k; j++) {
                     distanza=distance(2, punti.x[i], punti.y[i], centroidi.x[j], centroidi.y[j]); //calcolo la distanza del punto i dal centroide j
-                    if(distanza<=punti.distcluster[i]){  //se la distanza calcolata è minore rispetto
+                    if(distanza<=punti.distcluster[i]){  //se la distanza calcolata è minore la sostituisco alla precedente
                         punti.distcluster[i]=distanza;
                         indmin=j;
                     }
@@ -65,28 +65,28 @@ int main() {
                 if(punti.cluster[i] != indmin){
                     cambi=1;  //registro il cambio di gruppo da parte del punto
                 }
-#pragma omp atomic
+#pragma omp atomic                              //sommo le coordinate del punto nei vettori ausiliari per poter poi calcolare la posizione dei nuovi centroidi
                 newx[indmin]+=punti.x[i];
 #pragma omp atomic
                 newy[indmin]+=punti.y[i];
 #pragma omp atomic
-                centroidi.numpunti[indmin]++;
+                centroidi.numpunti[indmin]++;     //aggiorno anche il numero di punti appartenenti al cluster scelto
                 punti.cluster[i] = indmin;
             }
 #pragma omp for
-            for (int i = 0; i < k; i++) { //ricalcolo la posizione dei centroidi dei cluster stabiliti in precedenza
+            for (int i = 0; i < k; i++) { //ricalcolo la posizione dei centroidi dei cluster composti in precedenza
                 // come media aritmetica delle coordinate di tutti i punti appartenenti al cluster
                 if(centroidi.numpunti[i]!=0) {
-                    centroidi.x[i] =newx[i] / centroidi.numpunti[i];
+                    centroidi.x[i] =newx[i] / centroidi.numpunti[i]; //avendo già calcolato la somma delle coordinate dei punti del cluster basta dividere per il numero di centroidi assegnati al cluster
                     centroidi.y[i] = newy[i]  / centroidi.numpunti[i];
-                } else{ //nel caso un cluster fosse rimasto senza punti assegnati, il centroide lo assegno casualmente a uno qualsiasi dei punti in input
+                } else{ //nel caso un cluster fosse rimasto senza punti assegnati, il centroide lo assegno casualmente con le coordinate uno qualsiasi dei punti in input
                     unsigned long long j;
                     j = (rand() / RAND_MAX) * n;
                     centroidi.x[i]=punti.x[j];
                     centroidi.y[i]=punti.y[j];
                 }
             }
-            if(cambi==0) {
+            if(cambi==0) { //condizione che si verifica solo alla fine dell'esecuzione
 #pragma omp for reduction(+:sse)  //calcolo la somma degli errori al quadrato (SSE)
                 for (int i = 0; i < n; i++) {
                     sse = sse + pow(punti.distcluster[i], 2);
@@ -113,8 +113,7 @@ int main() {
 
     myfile.close();
 #endif
-
-    cout<<sse<<endl;
+    cout<<"Somma degli errorei al quadrato (SSE): "<<sse<<endl;
     std::cout << "Tempo necessario: " << end-start << " secondi "<< std::endl;
     return 0;
 }
