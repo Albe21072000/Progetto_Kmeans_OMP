@@ -11,7 +11,7 @@
 #endif
 #ifndef test
 #define NUM_PUNTI 1000000
-#define NUM_CENTROIDI 30
+#define NUM_CENTROIDI 10
 #endif
 using namespace std;
 struct points{       //structure of array per contenere le coordinate dei punti, il cluster di appartenenza e la distanza dal centroide di tale gruppo

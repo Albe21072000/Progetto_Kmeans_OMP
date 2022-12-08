@@ -1,7 +1,7 @@
 #include "Kmeans.h"
 
 int main() {
-    srand(time(NULL));
+   //srand(time(NULL));
     centroids centroidi{};
     points punti{};
 #ifdef test
@@ -12,32 +12,39 @@ int main() {
 #endif
 
 #ifndef test
-    int npunti=NUM_PUNTI;   //assegno il numero di punti da generare casualmente
-    punti.x=*new vector<double>(npunti);
-    punti.y=*new vector<double>(npunti);
-    punti.distcluster=*new vector<double>(npunti);
-    int numcentr=NUM_CENTROIDI; //assegnpo il numero di centroidi da generare casualmente (e quindi i cluster a cui assegnare i miei punti
-    centroidi.x=*new vector<double>(numcentr);
-    centroidi.y=*new vector<double>(numcentr);
-    generate(punti.x.begin(), punti.x.end(), randgen);   //riempio i miei vettori delle coordinate con valori casuali
-    generate(punti.y.begin(), punti.y.end(), randgen);
-    generate(centroidi.x.begin(), centroidi.x.end(), randgen);
-    generate(centroidi.y.begin(), centroidi.y.end(), randgen);
+    int npunti=NUM_PUNTI;   //scelgo il numero di punti da generare casualmente
+    punti.x.reserve(npunti);
+    punti.y.reserve(npunti);
+    punti.distcluster.reserve(npunti);
+    int numcentr=NUM_CENTROIDI; //scelgo il numero di centroidi da generare casualmente (e quindi i cluster a cui assegnare i miei punti
+    centroidi.x.reserve(numcentr);
+    centroidi.y.reserve(numcentr);
+    for(int i=0;i<npunti;i++){
+        punti.x.push_back(randgen());
+        punti.y.push_back(randgen());
+    }
+    for(int i=0;i<numcentr;i++){
+        centroidi.x.push_back(randgen());
+        centroidi.y.push_back(randgen());
+    }
 #endif
-    const unsigned long long n=punti.x.size();
-    const unsigned long long k=centroidi.x.size();
-    for(int i=0;i<k;i++){
+    const unsigned long long n=punti.x.size();  //mi ricavo il numero di punti
+    const unsigned long long k=centroidi.x.size(); //mi ricavo il numero di cluster
+    for(int i=0;i<k;i++){  //stampo i centroidi iniziali scelti casualmente
         printf("(%f,%f) %d\n",centroidi.x[i],centroidi.y[i],i);
     }
-    double start = omp_get_wtime(); //faccio partire il contatore per il tempo dopo aver generato i miei dati su cui lavorare
-    centroidi.numpunti=*new vector<int>(k);
-    punti.distcluster=*new vector<double>(n);
-    punti.cluster=*new vector<int>(n);
-    std::fill_n(punti.cluster.begin(),n,-1);
+    double start = omp_get_wtime();  //faccio partire il contatore per il tempo dopo aver generato i miei dati su cui lavorare
+    vector<double> newx(k);
+    vector<double> newy(k);
+    centroidi.numpunti.reserve(k);
+    punti.distcluster.reserve(n);
+    punti.cluster.reserve(n);
+    std::fill_n(punti.cluster.begin(),n,-1); //Inserisco -1 come valore del cluster di appartenenza iniziale dei punti
+    // per indicare che inizialmente non appartengono ad alcun gruppo
+    int indmin;
     auto cambi=-1;
     double sse=0.0;
     double distanza;
-    int indmin=0;
     while(cambi!=0) {
         cambi=0;
         {
